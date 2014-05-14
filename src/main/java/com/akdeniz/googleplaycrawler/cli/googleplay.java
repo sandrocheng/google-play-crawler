@@ -48,6 +48,7 @@ import com.akdeniz.googleplaycrawler.GooglePlayAPI.RECOMMENDATION_TYPE;
 import com.akdeniz.googleplaycrawler.GooglePlayAPI.REVIEW_SORT;
 import com.akdeniz.googleplaycrawler.GooglePlayException;
 import com.akdeniz.googleplaycrawler.Utils;
+import com.akdeniz.googleplaycrawler.cli.report.Out;
 import com.akdeniz.googleplaycrawler.gsf.GoogleServicesFramework.BindAccountResponse;
 import com.akdeniz.googleplaycrawler.gsf.GoogleServicesFramework.LoginResponse;
 import com.akdeniz.googleplaycrawler.gsf.MTalkConnector;
@@ -71,7 +72,7 @@ public class googleplay {
 	private Namespace namespace;
 
 	public static enum COMMAND {
-		LIST, DOWNLOAD, CHECKIN, CATEGORIES, SEARCH, PERMISSIONS, REVIEWS, REGISTER, USEGCM, RECOMMENDATIONS
+			STATISTICS,LIST, DOWNLOAD, CHECKIN, CATEGORIES, SEARCH, PERMISSIONS, REVIEWS, REGISTER, USEGCM, RECOMMENDATIONS
 	}
 
 	private static final String LIST_HEADER = new StringJoiner(DELIMETER)
@@ -130,7 +131,9 @@ public class googleplay {
 		/* =================Check-In Arguments============== */
 		subparsers.addParser("checkin", true).description("checkin section!")
 				.setDefault("command", COMMAND.CHECKIN);
-
+		/* =================statistics Arguments============== */
+		subparsers.addParser("statistics", true).description("statistics report!")
+		.setDefault("command", COMMAND.STATISTICS);		
 		/* =================List Arguments============== */
 		Subparser listParser = subparsers
 				.addParser("list", true)
@@ -231,6 +234,9 @@ public class googleplay {
 
 		try {
 			switch (command) {
+			case STATISTICS:
+				statistics();
+				break;
 			case CHECKIN:
 				checkinCommand();
 				break;
@@ -578,6 +584,11 @@ public class googleplay {
 		}
 	}
 
+	private void statistics() throws Exception{
+		login();
+		Out.print("login success!");
+	}
+	
 	private void downloadCommand() throws Exception {
 		login();
 		List<String> packageNames = namespace.getList("packagename");

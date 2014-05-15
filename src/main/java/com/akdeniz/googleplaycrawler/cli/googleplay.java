@@ -49,6 +49,7 @@ import com.akdeniz.googleplaycrawler.GooglePlayAPI.REVIEW_SORT;
 import com.akdeniz.googleplaycrawler.GooglePlayException;
 import com.akdeniz.googleplaycrawler.Utils;
 import com.akdeniz.googleplaycrawler.cli.report.Out;
+import com.akdeniz.googleplaycrawler.cli.statistics.DataHandle;
 import com.akdeniz.googleplaycrawler.gsf.GoogleServicesFramework.BindAccountResponse;
 import com.akdeniz.googleplaycrawler.gsf.GoogleServicesFramework.LoginResponse;
 import com.akdeniz.googleplaycrawler.gsf.MTalkConnector;
@@ -579,14 +580,17 @@ public class googleplay {
 						.add(String.valueOf(appDetails.getInstallationSize()))
 						.add(appDetails.getNumDownloads()).toString();
 				System.out.println(formatted);
-
 			}
 		}
 	}
 
 	private void statistics() throws Exception{
+		Out.print("---start login!");
+		long time = System.currentTimeMillis();
 		login();
-		Out.print("login success!");
+		Out.print("---Login success,use " +(System.currentTimeMillis() - time)/1000 + " sec");
+		DataHandle mDh = new DataHandle(this.service);
+		mDh.startDataHandle();
 	}
 	
 	private void downloadCommand() throws Exception {

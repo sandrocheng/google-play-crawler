@@ -61,7 +61,7 @@ public class DataHandle {
 			throws Exception {
 		Out.print("------ fetch category " + mainCat.getName() + "->" + subCat.getName());
 		int start = 0;
-		int num = 20;
+		int num = 50;
 		int count = 0;
 		int errortime = 0;
 		while (true) {
@@ -80,29 +80,40 @@ public class DataHandle {
 				Thread.sleep(10000);
 				continue;
 			}
-			if (listResponse.getDoc(0).getChildList() == null
-					|| listResponse.getDoc(0).getChildList().isEmpty()) {
+			if (isChildEmpty(listResponse)) {
 				Out.print("------ fetch category " + mainCat.getName() + "-" + subCat.getName() + " success total : " + count);
 				return;
 			}else{
-				for (DocV2 child : listResponse.getDoc(0).getChildList()){
+				for (DocV2 child : listResponse.getDoc(0).getChildList()) {
 					String title = child.getTitle();
 					AppDetails appDetails = child.getDetails().getAppDetails();
 					String packageName = appDetails.getPackageName();
 					String creator = child.getCreator();
 					String price = child.getOffer(0).getFormattedAmount();
-					String installationSize = String.valueOf(appDetails.getInstallationSize());
+					String installationSize = String.valueOf(appDetails
+							.getInstallationSize());
 					String numberOfDownloads = appDetails.getNumDownloads();
 					AppInfo ai = new AppInfo(title, packageName, creator,
 							price, installationSize, numberOfDownloads);
-					Out.print((count+1) + ") " + ai.toString());
 					appList.add(ai);
 					count++;
 				}
 				start += num;
 			}
-			Thread.sleep(1000);
+			Thread.sleep(3000);
 		}
+	}
+	
+	private boolean isChildEmpty(ListResponse listResponse){
+		boolean result = true;
+		try {
+			result = listResponse.getDoc(0).getChildList() == null
+					|| listResponse.getDoc(0).getChildList().isEmpty();
+		} catch (Exception e) {
+			System.err.println(">>>>>>>>> isChildEmpty error : " + e.toString());
+		}
+		
+		return result;
 	}
 
 	private List<CategoryObj> fetchMainCat() throws IOException {

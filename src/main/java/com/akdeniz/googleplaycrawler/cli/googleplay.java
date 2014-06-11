@@ -49,6 +49,7 @@ import com.akdeniz.googleplaycrawler.GooglePlayAPI.REVIEW_SORT;
 import com.akdeniz.googleplaycrawler.GooglePlayException;
 import com.akdeniz.googleplaycrawler.Utils;
 import com.akdeniz.googleplaycrawler.cli.report.Out;
+import com.akdeniz.googleplaycrawler.cli.review.ReviewDataHandler;
 import com.akdeniz.googleplaycrawler.cli.statistics.DataHandle;
 import com.akdeniz.googleplaycrawler.gsf.GoogleServicesFramework.BindAccountResponse;
 import com.akdeniz.googleplaycrawler.gsf.GoogleServicesFramework.LoginResponse;
@@ -73,7 +74,7 @@ public class googleplay {
 	private Namespace namespace;
 
 	public static enum COMMAND {
-			STATISTICS,LIST, DOWNLOAD, CHECKIN, CATEGORIES, SEARCH, PERMISSIONS, REVIEWS, REGISTER, USEGCM, RECOMMENDATIONS
+			TEST,COMMENTS,STATISTICS,LIST, DOWNLOAD, CHECKIN, CATEGORIES, SEARCH, PERMISSIONS, REVIEWS, REGISTER, USEGCM, RECOMMENDATIONS
 	}
 
 	private static final String LIST_HEADER = new StringJoiner(DELIMETER)
@@ -132,9 +133,15 @@ public class googleplay {
 		/* =================Check-In Arguments============== */
 		subparsers.addParser("checkin", true).description("checkin section!")
 				.setDefault("command", COMMAND.CHECKIN);
+		/* =================comments Arguments============== */
+		subparsers.addParser("comments", true).description("get app comments!")
+		.setDefault("command", COMMAND.COMMENTS);		
 		/* =================statistics Arguments============== */
 		subparsers.addParser("statistics", true).description("statistics report!")
 		.setDefault("command", COMMAND.STATISTICS);		
+		/* =================statistics Arguments============== */
+		subparsers.addParser("test", true).description("test ")
+		.setDefault("command", COMMAND.TEST);			
 		/* =================List Arguments============== */
 		Subparser listParser = subparsers
 				.addParser("list", true)
@@ -235,6 +242,9 @@ public class googleplay {
 
 		try {
 			switch (command) {
+			case TEST:
+				test();
+				break;
 			case STATISTICS:
 				statistics();
 				break;
@@ -255,6 +265,9 @@ public class googleplay {
 				break;
 			case PERMISSIONS:
 				permissionsCommand();
+				break;
+			case COMMENTS:
+				commentsCommand();
 				break;
 			case REVIEWS:
 				reviewsCommand();
@@ -375,6 +388,16 @@ public class googleplay {
 		}
 	}
 
+	private void commentsCommand() throws Exception{
+		Out.print("---start login!");
+		long time = System.currentTimeMillis();
+		login();
+		Out.print("---Login success,use " +(System.currentTimeMillis() - time)/1000 + " sec");
+		
+		ReviewDataHandler dataHandler = new ReviewDataHandler(service);
+		dataHandler.getReviews();
+	}
+	
 	private void reviewsCommand() throws Exception {
 		login();
 
@@ -389,13 +412,14 @@ public class googleplay {
 		if (response.getReviewCount() == 0) {
 			System.out.println("No review found!");
 		}
-		System.out.println("review result ->");
 		for (Review r : response.getReviewList()) {
 			System.out.println("////////////////////////////////");
-			System.out.println("authorName : "+r.getAuthorName());
-			System.out.println("title : "+r.getTitle());
-			System.out.println("replayTest :" + r.getReplyText());
+			System.out.println("authorName : " + r.getAuthorName());
+			System.out.println("title : " + r.getTitle());
+			System.out.println("comment : " + r.getComment());
+			System.out.println("startRating : " + r.getStarRating());
 		}
+
 	}
 
 	private void registerCommand() throws Exception {
@@ -699,7 +723,9 @@ public class googleplay {
 		System.out.println("Downloaded! " + appDetails.getPackageName()
 				+ ".apk");
 	}
-
+	
+	private void test() {
+	}
 }
 
 class ReviewSort implements ArgumentType<Object> {

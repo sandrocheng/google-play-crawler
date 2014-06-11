@@ -73,7 +73,7 @@ public class DataHandle {
 			} catch (Exception e) {
 				errortime ++;
 				if(errortime >2){
-					System.err.println("*** get app info response error 5 times,has to return ");
+					System.err.println("*** get app info response error 2 times,has to return ");
 					return;
 				}
 				System.err.println("*** get app info response error : " + e.toString() + " ,sleep 10 sec do it again!");
@@ -95,6 +95,7 @@ public class DataHandle {
 					String numberOfDownloads = appDetails.getNumDownloads();
 					AppInfo ai = new AppInfo(title, packageName, creator,
 							price, installationSize, numberOfDownloads);
+					Out.print(ai.toString());
 					appList.add(ai);
 					count++;
 				}
